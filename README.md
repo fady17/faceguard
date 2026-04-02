@@ -87,7 +87,7 @@ That's it. The guard fires automatically after your next login.
 make test
 
 # Live run — siren and Discord will fire if triggered
-python face_guard.py --no-delay --verbose
+uv run python face_guard.py --no-delay --verbose
 
 # Check LaunchAgent status
 make status
@@ -161,10 +161,10 @@ All settings live in `~/.faceguard/config.json`. The file is created from `confi
 ```bash
 make enroll              # Add your face
 make verify              # Test your face against the roster
-python enroll.py list    # Show all enrolled people
-python enroll.py remove <name>   # Remove someone
-python enroll.py export ~/backup.pkg   # Export roster (backup)
-python enroll.py import ~/backup.pkg   # Import roster
+uv run python enroll.py list    # Show all enrolled people
+uv run python enroll.py remove <name>   # Remove someone
+uv run python enroll.py export ~/backup.pkg   # Export roster (backup)
+uv run python enroll.py import ~/backup.pkg   # Import roster
 ```
 
 ---

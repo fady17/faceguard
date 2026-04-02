@@ -40,6 +40,39 @@ CONFIG_EXAMPLE = SCRIPT_DIR / "config.example.json"
 CONFIG_TARGET = FACEGUARD_DIR / "config.json"
 
 
+# def patch_face_recognition_models():
+#     """Patches face_recognition_models to remove pkg_resources dependency."""
+#     print("\n── compatibility patch ───────────────────────────────")
+#     # Identify the venv path relative to this script
+#     venv_site_packages = SCRIPT_DIR / ".venv" / "lib" / "python3.12" / "site-packages"
+#     target_file = venv_site_packages / "face_recognition_models" / "__init__.py"
+
+#     if not target_file.exists():
+#         print(f"  ⚠  Could not find {target_file} to patch.")
+#         return
+
+#     content = """from pathlib import Path
+
+# _MODELS_DIR = Path(__file__).parent / "models"
+
+# def pose_predictor_model_location():
+#     return str(_MODELS_DIR / "shape_predictor_68_face_landmarks.dat")
+
+# def pose_predictor_five_point_model_location():
+#     return str(_MODELS_DIR / "shape_predictor_5_face_landmarks.dat")
+
+# def face_recognition_model_location():
+#     return str(_MODELS_DIR / "dlib_face_recognition_resnet_model_v1.dat")
+
+# def cnn_face_detector_model_location():
+#     return str(_MODELS_DIR / "mmod_human_face_detector.dat")
+# """
+#     try:
+#         target_file.write_text(content)
+#         print(f"  ✓  Patched {target_file} for Python 3.12")
+#     except Exception as e:
+#         print(f"  ✗  Failed to patch: {e}")
+
 def main() -> None:
     print("── faceguard setup ───────────────────────────────────")
 
@@ -115,6 +148,7 @@ def main() -> None:
     print("     make install")
     print()
     print("  If something looks wrong:  make diagnose")
+    # patch_face_recognition_models()
     print("─────────────────────────────────────────────────────")
 
 

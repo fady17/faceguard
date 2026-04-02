@@ -468,17 +468,3 @@ source ~/.zshrc   # or ~/.bashrc
 uv --version
 ```
 
----
-
-## Phase Roadmap (Build Status)
-
-| Phase | Module(s) | Status |
-|---|---|---|
-| 1 — Scaffold & config | `config.py`, `logger.py`, `setup.py` | ✅ Done |
-| 2 — Enrollment | `roster.py`, `camera.py`, `enroll.py` | ✅ Done |
-| 3 — Guard core | `result.py`, `pidlock.py`, `guard_core.py`, `face_guard.py` | ✅ Done |
-| 4 — Alert layer | `alerts/siren.py`, `alerts/discord.py`, `alerts/__init__.py` | ✅ Done |
-| 5 — LM Studio vision | `vision.py` | ✅ Done |
-| 6 — LaunchAgent & Makefile | `scripts/`, `Makefile` | 🔄 Next |
-| 7 — Hardening | Retry tuning, edge cases, test suite | ⬜ Pending |
-| 8 — Open source packaging | `README.md`, `CONTRIBUTING.md`, release | ⬜ Pending |

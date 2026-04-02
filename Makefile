@@ -97,8 +97,8 @@ help:
 setup: _require-python
 	@echo "$(BOLD)Setting up faceguard...$(RESET)"
 	@$(PYTHON) setup.py
-	@echo ""
-	@echo "$(GREEN)Done.$(RESET) Edit $(CONFIG_FILE) then run: make enroll"
+	@echo "$(BOLD)Applying compatibility patch...$(RESET)"
+	@$(PYTHON) scripts/patch_models.py
 
 # ── Install guard LaunchAgent ──────────────────────────────────────────────────
 install: _require-python _require-config _require-enrolled
