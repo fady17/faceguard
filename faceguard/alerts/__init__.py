@@ -168,39 +168,53 @@ def _print_dry_run_summary(result: GuardResult, cfg: AppConfig) -> None:
     print(f"[dry-run] ────────────────────────────────────────────\n")
 
 def _shutdown_lm_studio(lm_cfg) -> None:
-    """Unload the model and stop the LM Studio server after the pipeline completes."""
+    """Mac-specific robust unload for LM Studio via nested instance discovery."""
     import requests
-    import subprocess
-    import shutil
     log = get_logger()
-    base_url = lm_cfg.base_url.rstrip("/").replace("/v1", "")
-
-    # ── Unload model ───────────────────────────────────────────────────────────
+    
+    # Strip v1 to reach the management API
+    api_base = lm_cfg.base_url.rstrip("/").replace("/v1", "")
+    
     try:
-        resp = requests.post(
-            f"{base_url}/api/v1/models/unload",
-            json={"identifier": lm_cfg.model},
-            timeout=10,
+        # 1. Fetch current model state
+        resp = requests.get(f"{api_base}/api/v1/models", timeout=5)
+        if resp.status_code != 200:
+            log.error("lm_query_failed", status=resp.status_code)
+            return
+
+        data = resp.json()
+        models = data.get("models", []) # The root key is 'models', not 'data'
+        
+        target_instance_id = None
+
+        # 2. Traverse the nested structure to find the active instance
+        for model_entry in models:
+            # Check if this is the model we are looking for
+            if model_entry.get("key") == lm_cfg.model:
+                loaded = model_entry.get("loaded_instances", [])
+                if loaded:
+                    # Grab the ID from the first loaded instance
+                    target_instance_id = loaded[0].get("id")
+                    break
+        
+        if not target_instance_id:
+            log.warn("lm_instance_not_found", 
+                     hint=f"Model {lm_cfg.model} is not currently loaded.")
+            return
+
+        # 3. Send the unload request with the correct field
+        unload_resp = requests.post(
+            f"{api_base}/api/v1/models/unload",
+            json={"instance_id": target_instance_id},
+            timeout=10
         )
-        log.info("lm_studio_model_unloaded", model=lm_cfg.model, status=resp.status_code)
-    except Exception as exc:
-        log.warn("lm_studio_unload_failed", detail=str(exc))
 
-    # ── Stop server ────────────────────────────────────────────────────────────
-    # Resolve lms from PATH first, then well-known install locations.
-    # No hardcoded paths — works on any machine.
-    lms = shutil.which("lms") or shutil.which(
-        "lms",
-        path="/usr/local/bin:/usr/bin:/bin"
-             ":~/.lmstudio/bin"
-             ":~/Applications/LM Studio.app/Contents/Resources/bin",
-    )
-    if not lms:
-        log.warn("lm_studio_stop_skipped", hint="lms CLI not found in PATH or known locations")
-        return
+        if unload_resp.status_code == 200:
+            log.info("lm_studio_unload_success", instance=target_instance_id)
+        else:
+            log.error("lm_studio_unload_failed", 
+                      status=unload_resp.status_code, 
+                      detail=unload_resp.text)
 
-    try:
-        subprocess.run([lms, "server", "stop"], timeout=10, capture_output=True)
-        log.info("lm_studio_server_stopped")
-    except Exception as exc:
-        log.warn("lm_studio_stop_failed", detail=str(exc))
+    except Exception as e:
+        log.error("lm_shutdown_exception", detail=str(e))
