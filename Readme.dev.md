@@ -127,6 +127,19 @@ python enroll.py add Fady
 # Verify the match works before trusting the guard
 python enroll.py verify
 
+── Verify identity ─────────────────────────────────
+
+  Opening camera...
+  Capturing 3 frame(s) for verification...
+     Capturing...       
+
+  Name                     Best distance    Result
+  ──────────────────────── ──────────────── ──────────
+  fady                     0.3276           ✓  MATCH
+
+  ✓  Identity confirmed: fady
+  (tolerance=0.5, lower distance = stronger match)
+
 # See who's enrolled
 python enroll.py list
 

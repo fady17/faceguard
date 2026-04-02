@@ -53,19 +53,13 @@ def _check_deps() -> None:
 
 
 _check_deps()
-from .faceguard.config import load_config, ConfigError
-from .faceguard.logger import init_logger, get_logger
-from .faceguard.pidlock import PidLock, LockError
-from .faceguard.alerts import Verdict, GuardResult
-from .faceguard import guard_core
-from .faceguard.alerts import dispatch
 
-# from faceguard.config import load_config, ConfigError
-# from faceguard.logger import init_logger, get_logger
-# from faceguard.pidlock import PidLock, LockError
-# from faceguard.result import Verdict, GuardResult
-# from faceguard import guard_core
-# from faceguard.alerts import dispatch
+from faceguard.config import load_config, ConfigError
+from faceguard.logger import init_logger, get_logger
+from faceguard.pidlock import PidLock, LockError
+from faceguard.result import Verdict, GuardResult
+from faceguard import guard_core
+from faceguard.alerts import dispatch
 
 
 # ── Alert dispatcher ───────────────────────────────────────────────────────────
