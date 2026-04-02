@@ -208,21 +208,6 @@ No data is sent anywhere except:
 
 ---
 
-## Project status
-
-| Phase | Status |
-|---|---|
-| Config & scaffold | ✅ |
-| Face enrollment CLI | ✅ |
-| Recognition core | ✅ |
-| Alert layer (siren + Discord) | ✅ |
-| LM Studio vision layer | ✅ |
-| LaunchAgent + Makefile | ✅ |
-| Test suite (91 tests) | ✅ |
-| Open source packaging | ✅ |
-
----
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
