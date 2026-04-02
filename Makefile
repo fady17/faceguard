@@ -487,19 +487,7 @@ _require-config:
 		echo "  Run: make setup"; \
 		exit 1; \
 	fi
-	@$(PYTHON) -c " \
-import json, sys; \
-try: \
-    cfg = json.load(open('$(CONFIG_FILE)')); \
-    url = cfg.get('discord',{}).get('webhook_url',''); \
-    if not url or 'YOUR_WEBHOOK' in url: \
-        print('Error: discord.webhook_url is not set in $(CONFIG_FILE).'); \
-        print('  Edit the file and replace YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN'); \
-        sys.exit(1); \
-except json.JSONDecodeError as e: \
-    print('Error: $(CONFIG_FILE) is not valid JSON: ' + str(e)); \
-    sys.exit(1); \
-" || exit 1
+	@$(PYTHON) scripts/check_config.py || exit 1
 
 _require-enrolled:
 	@if [ ! -f "$(FACEGUARD_DIR)/roster.pkl" ]; then \
