@@ -86,6 +86,9 @@ That's it. The guard fires automatically after your next login.
 # Dry run — recognition fires, no siren, no Discord
 make test
 
+# Live run — siren and Discord will fire if triggered
+python face_guard.py --no-delay --verbose
+
 # Check LaunchAgent status
 make status
 
@@ -105,7 +108,7 @@ When the guard detects an unknown face, it can describe the intruder's appearanc
 4. Set the model name in `~/.faceguard/config.json`:
    ```json
    "lm_studio": {
-     "model": "moondream2"
+     "model": "qwen/qwen3.5-9b"
    }
    ```
 5. Auto-start LM Studio at login:

@@ -96,6 +96,13 @@ def _build_embed(result: GuardResult) -> dict:
             {"name": "Timestamp", "value": ts,              "inline": True},
             {"name": "Retries",   "value": str(result.face_retries), "inline": True},
         ]
+        # ADD THIS:
+        if result.lm_description:
+            fields.append({
+                "name":   "👁 Appearance",
+                "value":  result.lm_description,
+                "inline": False,
+            })
 
     elif result.verdict == Verdict.CAMERA_ERROR:
         colour = _COLOUR_ORANGE

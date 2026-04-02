@@ -144,8 +144,8 @@ def cfg_file(tmp_path: Path) -> Path:
         "lm_studio": {
             "enabled": True,
             "base_url": "http://localhost:1234/v1",
-            "model": "moondream2",
-            "timeout_seconds": 10,
+            "model": "qwen/qwen3.5-9b",
+            "timeout_seconds": 60,
             "describe_unknown": True,
         },
         "recognition": {

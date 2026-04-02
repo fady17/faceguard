@@ -113,8 +113,13 @@ def _call_lm_studio(
 
     payload = {
         "model": model,
-        "max_tokens": 200,       # description should be concise — hard cap
-        "temperature": 0.2,      # low temp = consistent, factual output
+        "max_tokens": 900,       # description should be concise — hard cap
+        "temperature": 0.7,      # low temp = consistent, factual output
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repetition_penalty": 1.0,
         "messages": [
             {"role": "system", "content": _SYSTEM_PROMPT},
             {
@@ -141,7 +146,16 @@ def _call_lm_studio(
     if not choices:
         raise ValueError(f"LM Studio returned no choices: {data}")
 
-    content = choices[0].get("message", {}).get("content", "").strip()
+ 
+    message = choices[0].get("message", {})
+    content = message.get("content", "").strip()
+
+    # Thinking models (Qwen3, etc.) put reasoning in reasoning_content and
+    # leave content empty until they finish drafting. Fall back to it so we
+    # still get a useful description even when max_tokens cuts off early.
+    if not content:
+        content = message.get("reasoning_content", "").strip()
+
     if not content:
         raise ValueError("LM Studio returned empty content")
 
@@ -166,7 +180,7 @@ def describe_intruder(result: GuardResult, lm_cfg: LMStudioConfig) -> Optional[s
     log = get_logger()
 
     # ── Guard against being called in wrong context ────────────────────────────
-    if result.verdict != Verdict.UNKNOWN:
+    if result.verdict not in (Verdict.UNKNOWN, Verdict.NO_FACE):
         log.warn("vision_wrong_verdict", verdict=result.verdict.value)
         return None
 

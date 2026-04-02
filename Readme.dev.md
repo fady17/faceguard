@@ -343,8 +343,8 @@ All fields with their defaults and valid ranges:
   "lm_studio": {
     "enabled": true,              // false = skip vision layer entirely
     "base_url": "http://localhost:1234/v1",   // LM Studio server URL
-    "model": "moondream2",        // model name exactly as shown in LM Studio
-    "timeout_seconds": 10,        // max seconds to wait for LM response
+    "model": "qwen/qwen3.5-9b",        // model name exactly as shown in LM Studio
+    "timeout_seconds": 60,        // max seconds to wait for LM response
     "describe_unknown": true      // false = skip vision even when enabled
   },
 

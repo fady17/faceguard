@@ -95,7 +95,7 @@ def dispatch(result: GuardResult, cfg: AppConfig, dry_run: bool = False) -> None
     # Only attempted for UNKNOWN — other verdicts don't have a face to describe.
     # The result object is mutated in-place so Discord picks it up automatically.
     if (
-        verdict == Verdict.UNKNOWN
+        verdict in (Verdict.UNKNOWN, Verdict.NO_FACE)  
         and cfg.lm_studio.enabled
         and cfg.lm_studio.describe_unknown
         and result.frame_bgr is not None
