@@ -26,7 +26,7 @@
 
   "siren": {
     "enabled": true,
-    "sound_file": null,
+    "sound_file": "~/.faceguard/siren/siren.mp3",
     "_sound_file_comment": "null = use built-in macOS sound. Set to absolute path of a .mp3/.wav/.aiff for custom siren.",
     "volume": 1.0,
     "repeat": 3

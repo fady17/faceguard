@@ -25,11 +25,15 @@ from pathlib import Path
 FACEGUARD_DIR = Path("~/.faceguard").expanduser()
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
+SIREN_SOURCE = SCRIPT_DIR / "assets" / "siren" / "dragon-studio-police-siren-397963.mp3"
+SIREN_TARGET_DIR = FACEGUARD_DIR / "siren"
+SIREN_TARGET_FILE = SIREN_TARGET_DIR / "siren.mp3"
 DIRS = [
     FACEGUARD_DIR,
     FACEGUARD_DIR / "photos" / "captures",
     FACEGUARD_DIR / "photos" / "enrolled",
     FACEGUARD_DIR / "logs",
+    SIREN_TARGET_DIR,
 ]
 
 CONFIG_EXAMPLE = SCRIPT_DIR / "config.example.json"
@@ -55,8 +59,14 @@ def main() -> None:
         shutil.copy(CONFIG_EXAMPLE, CONFIG_TARGET)
         print(f"\n  ✓  Config created at {CONFIG_TARGET}")
         print("     Open it and fill in your Discord webhook URL.")
-
-    # 3. Check dependencies and warn about face_recognition_models
+    # 3. Add this logic after the config copy section:
+    print("\n── assets setup ──────────────────────────────────────")
+    if SIREN_SOURCE.exists():
+        shutil.copy(SIREN_SOURCE, SIREN_TARGET_FILE)
+        print(f"  ✓  Siren copied to {SIREN_TARGET_FILE}")
+    else:
+        print(f"  ⚠  Source siren not found at {SIREN_SOURCE}")
+    # 4. Check dependencies and warn about face_recognition_models
     print("\n── dependency check ──────────────────────────────────")
     missing = []
     for pkg in ["face_recognition", "cv2", "requests", "numpy"]:
