@@ -124,6 +124,9 @@ def dispatch(result: GuardResult, cfg: AppConfig, dry_run: bool = False) -> None
         siren_thread.join(timeout=_SIREN_JOIN_TIMEOUT)
         if siren_thread.is_alive():
             log.warn("siren_thread_still_running", hint="Process will exit anyway")
+    # ── 5. Shut down LM Studio after use ───────────────────────────────────────
+    if cfg.lm_studio.enabled:
+        _shutdown_lm_studio(cfg.lm_studio)
 
     log.info("dispatch_complete", verdict=verdict.value)
 
@@ -163,3 +166,41 @@ def _print_dry_run_summary(result: GuardResult, cfg: AppConfig) -> None:
     print(f"[dry-run] Would Discord: {would_discord}")
     print(f"[dry-run] Would LM     : {would_lm}")
     print(f"[dry-run] ────────────────────────────────────────────\n")
+
+def _shutdown_lm_studio(lm_cfg) -> None:
+    """Unload the model and stop the LM Studio server after the pipeline completes."""
+    import requests
+    import subprocess
+    import shutil
+    log = get_logger()
+    base_url = lm_cfg.base_url.rstrip("/").replace("/v1", "")
+
+    # ── Unload model ───────────────────────────────────────────────────────────
+    try:
+        resp = requests.post(
+            f"{base_url}/api/v1/models/unload",
+            json={"identifier": lm_cfg.model},
+            timeout=10,
+        )
+        log.info("lm_studio_model_unloaded", model=lm_cfg.model, status=resp.status_code)
+    except Exception as exc:
+        log.warn("lm_studio_unload_failed", detail=str(exc))
+
+    # ── Stop server ────────────────────────────────────────────────────────────
+    # Resolve lms from PATH first, then well-known install locations.
+    # No hardcoded paths — works on any machine.
+    lms = shutil.which("lms") or shutil.which(
+        "lms",
+        path="/usr/local/bin:/usr/bin:/bin"
+             ":~/.lmstudio/bin"
+             ":~/Applications/LM Studio.app/Contents/Resources/bin",
+    )
+    if not lms:
+        log.warn("lm_studio_stop_skipped", hint="lms CLI not found in PATH or known locations")
+        return
+
+    try:
+        subprocess.run([lms, "server", "stop"], timeout=10, capture_output=True)
+        log.info("lm_studio_server_stopped")
+    except Exception as exc:
+        log.warn("lm_studio_stop_failed", detail=str(exc))
