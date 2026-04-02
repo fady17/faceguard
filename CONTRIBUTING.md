@@ -15,7 +15,7 @@ Thanks for your interest. This is a personal security tool — contributions tha
 ## Development setup
 
 ```bash
-git clone https://github.com/yourname/faceguard.git
+git clone https://github.com/fady17/faceguard.git
 cd faceguard
 
 python3 -m venv .venv && source .venv/bin/activate

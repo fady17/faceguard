@@ -43,5 +43,5 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `ROSTER_ERROR` — roster missing or corrupt (system fault, Discord notification)
 - `CONFIG_ERROR` — config invalid (system fault)
 
-[Unreleased]: https://github.com/yourname/faceguard/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/yourname/faceguard/releases/tag/v1.0.0
+[Unreleased]: https://github.com/fady17/faceguard/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/fady17/faceguard/releases/tag/v1.0.0
