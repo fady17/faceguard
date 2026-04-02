@@ -37,16 +37,29 @@ git clone https://github.com/fady17/faceguard.git
 cd faceguard
 ```
 
-### 2. Create a virtual environment
-
-Always develop in a venv. The guard's LaunchAgent will also point to this venv's Python binary.
+### 2. Install uv (if you don't have it)
 
 ```bash
-python3 -m venv .venv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+`uv` manages Python versions and virtual environments. It's faster than `pip` and doesn't require activating the venv for Makefile usage — the Makefile detects `.venv/bin/python3` directly.
+
+### 3. Create a virtual environment
+
+```bash
+uv venv .venv
+```
+
+This creates `.venv/` in the project root using your system Python (or a `uv`-managed Python if you prefer a specific version: `uv venv .venv --python 3.12`).
+
+You don't need to activate the venv to use `make` targets — they reference `.venv/bin/python3` directly. Activate when you want to run scripts manually:
+
+```bash
 source .venv/bin/activate
 ```
 
-### 3. Install cmake (required by dlib)
+### 4. Install cmake (required by dlib)
 
 ```bash
 brew install cmake
@@ -54,28 +67,22 @@ brew install cmake
 
 This is a one-time system step. dlib compiles from source on install and takes 2-4 minutes — that's normal.
 
-### 4. Install Python dependencies
+### 5. Install Python dependencies
 
 ```bash
-pip install -r requirements.txt
+uv pip install -r requirements.txt
+uv pip install -r requirements-dev.txt   # test tools: pytest, ruff, mypy
 ```
 
-`requirements.txt` contains:
-```
-face_recognition>=1.3.0
-opencv-python>=4.9.0
-requests>=2.31.0
-```
-
-### 5. Scaffold the data directory
+### 6. Scaffold the data directory
 
 ```bash
-python setup.py
+make setup
 ```
 
 This creates `~/.faceguard/` with the right subdirectory structure and copies `config.example.json` → `~/.faceguard/config.json` if it doesn't already exist. It will not overwrite an existing config.
 
-### 6. Edit your config
+### 7. Edit your config
 
 ```bash
 nano ~/.faceguard/config.json
@@ -85,7 +92,7 @@ Minimum required change: set `discord.webhook_url`. Everything else has sane def
 
 See the [Config Reference](#config-reference) section below for all fields.
 
-### 7. Grant camera permission
+### 8. Grant camera permission
 
 This is a macOS security requirement. The permission is per-binary — you need to grant it to the Python interpreter inside your venv, not to Python in general.
 
@@ -93,13 +100,16 @@ Run any command that opens the camera (enroll will trigger it):
 
 ```bash
 python enroll.py add YourName
+# or: source .venv/bin/activate && python enroll.py add YourName
 ```
 
 macOS will show a permission dialog the first time. Click **Allow**. If the dialog doesn't appear and the camera returns blank frames, go to:
 
 > System Settings → Privacy & Security → Camera
 
-Find your Python binary in the list and enable it. The path will be something like `/Users/you/code/faceguard/.venv/bin/python3`.
+Find your Python binary in the list — it will be at `.venv/bin/python3` relative to the project. The full absolute path shows in the Privacy panel. Enable it.
+
+> **Note:** The camera permission follows the binary path. If you recreate your venv (`rm -rf .venv && uv venv .venv`), you'll need to re-grant the permission for the new binary.
 
 ---
 
@@ -407,11 +417,13 @@ Enrollment behaviour is in `enroll.py` (the CLI layer) and `roster.py` (the data
 # Make sure cmake is installed first
 brew install cmake
 # Then retry
-pip install face_recognition
+uv pip install face_recognition
 ```
 
 **Camera opens but returns black/green frames**
-This is almost always a macOS camera permission issue. The permission is per-binary. Run `python enroll.py add test` in your terminal — this forces the permission dialog for your current Python binary. Go to System Settings → Privacy & Security → Camera and verify your venv Python is listed and enabled.
+This is almost always a macOS camera permission issue. The permission is per-binary. Run `python enroll.py add test` in your terminal — this forces the permission dialog for your current Python binary. Go to System Settings → Privacy & Security → Camera and verify your `.venv/bin/python3` is listed and enabled.
+
+If you recently recreated the venv (`rm -rf .venv && uv venv .venv`), the new binary needs a fresh permission grant — the old path is gone and the new one doesn't inherit it.
 
 **`verify` shows poor match score despite good enrollment**
 - Check lighting — recognition degrades significantly in dark or backlit conditions
@@ -422,13 +434,21 @@ This is almost always a macOS camera permission issue. The permission is per-bin
 The model is not loaded. Open the LM Studio app, go to the Chat tab, and load your vision model. The guard will work fine without it — vision is a soft dependency.
 
 **Guard exits with code 2 at every login**
-Most common cause: the camera permission was granted to the terminal Python but not to the venv Python the LaunchAgent uses. Verify the Python binary path in the plist matches the one that has camera permission.
+Most common cause: the camera permission was granted to the terminal Python but not to the venv Python the LaunchAgent uses. Verify the Python binary path in the plist matches the one that has camera permission. Run `make status` — it shows the Python path that was embedded in the plist.
 
 **PID lock prevents guard from starting after a crash**
 ```bash
 rm ~/.faceguard/faceguard.pid
 ```
 The guard handles stale PIDs automatically (checks if the process is actually alive), but if something unusual happened you can delete it manually.
+
+**uv not found after install**
+```bash
+# Reload your shell after installing uv
+source ~/.zshrc   # or ~/.bashrc
+# Verify
+uv --version
+```
 
 ---
 
@@ -441,6 +461,6 @@ The guard handles stale PIDs automatically (checks if the process is actually al
 | 3 — Guard core | `result.py`, `pidlock.py`, `guard_core.py`, `face_guard.py` | ✅ Done |
 | 4 — Alert layer | `alerts/siren.py`, `alerts/discord.py`, `alerts/__init__.py` | ✅ Done |
 | 5 — LM Studio vision | `vision.py` | ✅ Done |
-| 6 — LaunchAgent & Makefile | `scripts/`, `Makefile` | ✅ Done  |
-| 7 — Hardening | Retry tuning, edge cases, test suite | ✅ Done  |
+| 6 — LaunchAgent & Makefile | `scripts/`, `Makefile` | 🔄 Next |
+| 7 — Hardening | Retry tuning, edge cases, test suite | ⬜ Pending |
 | 8 — Open source packaging | `README.md`, `CONTRIBUTING.md`, release | ⬜ Pending |

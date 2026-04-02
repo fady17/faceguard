@@ -32,18 +32,20 @@ Every login event is logged locally regardless of outcome. Captured photos are s
 git clone https://github.com/fady17/faceguard.git
 cd faceguard
 
-# Create a virtual environment
-python3 -m venv .venv && source .venv/bin/activate
+# Create a virtual environment with uv (recommended)
+uv venv .venv
 
 # Install dlib dependency (required by face_recognition)
 brew install cmake
 
 # Install Python dependencies
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 
 # Scaffold config and data directory
 make setup
 ```
+
+> **Don't have uv?** `curl -LsSf https://astral.sh/uv/install.sh | sh` — or use `python3 -m venv .venv && pip install -r requirements.txt` if you prefer.
 
 ### 2. Configure
 
@@ -175,7 +177,7 @@ macOS requires explicit camera permission per Python binary. The first time you 
 If no dialog appears and you get blank captures, go to:
 > System Settings → Privacy & Security → Camera
 
-Find your `.venv/bin/python3` binary and enable it.
+Find your `.venv/bin/python3` binary and enable it. The venv Python path is the same whether you created it with `uv venv` or `python3 -m venv`.
 
 ---
 

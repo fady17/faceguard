@@ -18,14 +18,24 @@
 # ── Configuration ──────────────────────────────────────────────────────────────
 # All variables are auto-detected from the current environment.
 # Override on the command line if needed: make install PYTHON=/custom/python3
+#
+# uv workflow (recommended):
+#   uv venv .venv
+#   uv pip install -r requirements.txt
+#   uv pip install -r requirements-dev.txt
+#   make setup
+#
+# The Makefile detects the .venv Python automatically — you do not need to
+# activate the venv before running make targets.
 
 # Absolute path to this Makefile's directory (the project root)
 PROJECT_DIR := $(shell pwd)
 
-# Python to use — prefers .venv in project, falls back to system python3
-VENV_PYTHON  := $(PROJECT_DIR)/.venv/bin/python3
+# Python binary detection — prefers .venv created by uv or pip, falls back to system python3.
+# The LaunchAgent plist uses this absolute path directly (no shell activation at login time).
+VENV_PYTHON   := $(PROJECT_DIR)/.venv/bin/python3
 SYSTEM_PYTHON := $(shell which python3 2>/dev/null)
-PYTHON       := $(shell [ -f "$(VENV_PYTHON)" ] && echo "$(VENV_PYTHON)" || echo "$(SYSTEM_PYTHON)")
+PYTHON        := $(shell [ -f "$(VENV_PYTHON)" ] && echo "$(VENV_PYTHON)" || echo "$(SYSTEM_PYTHON)")
 
 # Current user's home directory (LaunchAgents must go here)
 HOME_DIR     := $(HOME)
@@ -113,7 +123,8 @@ install: _require-python _require-config _require-enrolled
 	@# Verify the substitution worked — Python path must exist
 	@if [ ! -f "$(PYTHON)" ]; then \
 		echo "$(RED)Error: Python binary not found at $(PYTHON)$(RESET)"; \
-		echo "  Create a venv first: python3 -m venv .venv && source .venv/bin/activate"; \
+		echo "  Create a venv first:  uv venv .venv"; \
+		echo "  Install deps:         uv pip install -r requirements.txt"; \
 		rm -f "$(GUARD_PLIST)"; \
 		exit 1; \
 	fi
@@ -365,6 +376,14 @@ print(len(r)) \
 		echo "  lms CLI:          $(YELLOW)not found$(RESET)  (optional — needed for make install-lmstudio)"; \
 	fi
 
+	@# uv (recommended package manager)
+	@if which uv > /dev/null 2>&1; then \
+		UV_VERSION=$$(uv --version 2>&1); \
+		echo "  uv:               $(GREEN)found$(RESET)  ($$UV_VERSION)"; \
+	else \
+		echo "  uv:               $(YELLOW)not found$(RESET)  (optional — install: curl -LsSf https://astral.sh/uv/install.sh | sh)"; \
+	fi
+
 	@# afplay (siren)
 	@if which afplay > /dev/null 2>&1; then \
 		echo "  afplay:           $(GREEN)found$(RESET)  (siren will work)"; \
@@ -381,8 +400,8 @@ print(len(r)) \
 _require-python:
 	@if [ -z "$(PYTHON)" ] || [ ! -f "$(PYTHON)" ]; then \
 		echo "$(RED)Error: Python not found.$(RESET)"; \
-		echo "  Create a venv: python3 -m venv .venv && source .venv/bin/activate"; \
-		echo "  Then: pip install -r requirements.txt"; \
+		echo "  Create a venv:  uv venv .venv"; \
+		echo "  Install deps:   uv pip install -r requirements.txt"; \
 		exit 1; \
 	fi
 

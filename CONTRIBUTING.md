@@ -18,10 +18,10 @@ Thanks for your interest. This is a personal security tool — contributions tha
 git clone https://github.com/fady17/faceguard.git
 cd faceguard
 
-python3 -m venv .venv && source .venv/bin/activate
+uv venv .venv
 brew install cmake
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+uv pip install -r requirements.txt
+uv pip install -r requirements-dev.txt
 
 # Scaffold and configure
 make setup
