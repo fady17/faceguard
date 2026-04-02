@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.faceguard.guard.plist
+  LaunchAgent for the faceguard login-time face recognition guard.
+
+  This is a TEMPLATE. Do not load this file directly.
+  Run `make install` which substitutes __PYTHON__ and __PROJECT_DIR__
+  with the correct absolute paths for your machine, then copies the
+  result to ~/Library/LaunchAgents/.
+
+  Key decisions:
+    RunAtLoad=true     — fires once when the user session starts (after login)
+    KeepAlive=false    — guard runs once and exits; do NOT restart on exit
+    ThrottleInterval   — minimum 30s between launches (guards against rapid loops)
+    StandardOutPath    — stdout goes to a log file (for debugging LaunchAgent issues)
+    StandardErrorPath  — stderr captured separately (WARN/ERROR from logger)
+    EnvironmentVariables — explicit PATH so the guard can find system tools (afplay)
+
+  Why ThrottleInterval=30:
+    If the guard crashes immediately (misconfigured Python path, missing deps),
+    without a throttle LaunchAgent would spin-restart it thousands of times per
+    minute, filling disk with logs. 30 seconds is long enough to notice and fix
+    the issue without being annoying.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.faceguard.guard</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>__PYTHON__</string>
+    <string>__PROJECT_DIR__/face_guard.py</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+
+  <!-- Explicit PATH so afplay and other system tools are found -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>__HOME__</string>
+  </dict>
+
+  <!-- Capture stdout/stderr for post-hoc debugging -->
+  <!-- These are separate from the structured JSON logs in ~/.faceguard/logs/ -->
+  <key>StandardOutPath</key>
+  <string>__HOME__/.faceguard/logs/launchagent.out</string>
+
+  <key>StandardErrorPath</key>
+  <string>__HOME__/.faceguard/logs/launchagent.err</string>
+
+</dict>
+</plist>

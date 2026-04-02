@@ -1,0 +1,20 @@
+# faceguard runtime dependencies
+#
+# Install:
+#   pip install -r requirements.txt
+#
+# macOS / Apple Silicon note — face_recognition requires dlib which compiles
+# from source. Install cmake first:
+#   brew install cmake
+#   pip install face_recognition
+# Compilation takes 2-4 minutes. This is normal.
+#
+# Version pins: lower bound only, no upper bound.
+# We pin lower bounds because we developed and tested against these versions.
+# Upper bounds are omitted intentionally — they cause unnecessary breakage
+# when dependencies release patch versions.
+
+face_recognition>=1.3.0
+opencv-python>=4.9.0
+requests>=2.31.0
+numpy>=1.24.0

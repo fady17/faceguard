@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.faceguard.lmstudio.plist
+  Optional LaunchAgent to start the LM Studio server at login.
+
+  Install this ONLY if you want LM Studio running automatically at login.
+  The guard works without it — LM Studio is a soft dependency.
+  If you don't use the vision description feature, skip this plist entirely.
+
+  Prerequisites:
+    - LM Studio must be installed
+    - `lms` CLI must be available (installed with LM Studio)
+    - A vision model must already be downloaded in LM Studio
+
+  The `lms server start` command starts the LM Studio inference server.
+  It does NOT load a model — the model must be set to auto-load in LM Studio's
+  settings, or you load it manually once after login.
+
+  Why a separate plist from the guard:
+    - LM Studio failure must never prevent the guard from running
+    - Users who don't want LM Studio autostart can skip this entirely
+    - Separate labels mean separate launchctl control (load/unload independently)
+
+  ThrottleInterval=60:
+    Longer than the guard plist because LM Studio startup is heavier.
+    If lms exits non-zero (model not found, port busy), we don't want rapid retries.
+
+  Note: __LMS__ placeholder is substituted by `make install-lmstudio`.
+  If lms is at a non-standard path, adjust the substitution in the Makefile.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.faceguard.lmstudio</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>__LMS__</string>
+    <string>server</string>
+    <string>start</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>ThrottleInterval</key>
+  <integer>60</integer>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>__HOME__</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>__HOME__/.faceguard/logs/lmstudio.out</string>
+
+  <key>StandardErrorPath</key>
+  <string>__HOME__/.faceguard/logs/lmstudio.err</string>
+
+</dict>
+</plist>

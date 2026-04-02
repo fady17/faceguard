@@ -1,0 +1,14 @@
+# faceguard development dependencies
+#
+# Install after requirements.txt:
+#   pip install -r requirements-dev.txt
+#
+# These are not needed to run the guard — only for development and testing.
+
+# Testing
+pytest>=8.0.0
+pytest-mock>=3.12.0
+
+# Code quality (optional but recommended)
+ruff>=0.4.0          # linter + formatter (replaces flake8 + black)
+mypy>=1.10.0         # static type checker

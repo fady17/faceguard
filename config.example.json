@@ -1,0 +1,46 @@
+{
+  "_comment": "Copy this to ~/.faceguard/config.json and fill in your values.",
+
+  "discord": {
+    "webhook_url": "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
+    "alert_channel_name": "security-alerts",
+    "log_known_entries": false
+  },
+
+  "lm_studio": {
+    "enabled": true,
+    "base_url": "http://localhost:1234/v1",
+    "model": "moondream2",
+    "timeout_seconds": 10,
+    "describe_unknown": true
+  },
+
+  "recognition": {
+    "tolerance": 0.5,
+    "capture_retries": 3,
+    "capture_retry_delay_seconds": 1.5,
+    "no_face_retries": 3,
+    "no_face_retry_delay_seconds": 1.5,
+    "camera_index": 0
+  },
+
+  "siren": {
+    "enabled": true,
+    "sound_file": null,
+    "_sound_file_comment": "null = use built-in macOS sound. Set to absolute path of a .mp3/.wav/.aiff for custom siren.",
+    "volume": 1.0,
+    "repeat": 3
+  },
+
+  "paths": {
+    "roster_file": "~/.faceguard/roster.pkl",
+    "captures_dir": "~/.faceguard/photos/captures",
+    "enrolled_dir": "~/.faceguard/photos/enrolled",
+    "logs_dir": "~/.faceguard/logs"
+  },
+
+  "guard": {
+    "startup_delay_seconds": 8,
+    "pid_file": "~/.faceguard/faceguard.pid"
+  }
+}

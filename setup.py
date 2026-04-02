@@ -1,0 +1,79 @@
+"""
+setup.py — First-run scaffold for faceguard.
+
+Run once after cloning:
+    python setup.py
+
+What it does:
+  1. Creates ~/.faceguard/ directory tree
+  2. Copies config.example.json → ~/.faceguard/config.json if not already present
+  3. Creates a blank roster placeholder
+  4. Prints next steps
+
+Why a separate setup script rather than auto-creating on first guard run:
+  The guard runs unattended at login. If config is missing it should FAIL LOUDLY,
+  not silently create a blank config and run with no webhook configured.
+  Explicit setup = explicit intent.
+"""
+
+from __future__ import annotations
+
+import shutil
+import sys
+from pathlib import Path
+
+FACEGUARD_DIR = Path("~/.faceguard").expanduser()
+SCRIPT_DIR = Path(__file__).parent.resolve()
+
+DIRS = [
+    FACEGUARD_DIR,
+    FACEGUARD_DIR / "photos" / "captures",
+    FACEGUARD_DIR / "photos" / "enrolled",
+    FACEGUARD_DIR / "logs",
+]
+
+CONFIG_EXAMPLE = SCRIPT_DIR / "config.example.json"
+CONFIG_TARGET = FACEGUARD_DIR / "config.json"
+
+
+def main() -> None:
+    print("── faceguard setup ───────────────────────────────────")
+
+    # 1. Create directory tree
+    for d in DIRS:
+        d.mkdir(parents=True, exist_ok=True)
+        print(f"  ✓  {d}")
+
+    # 2. Copy example config if not present
+    if CONFIG_TARGET.exists():
+        print(f"\n  ℹ  Config already exists at {CONFIG_TARGET} — not overwriting.")
+    else:
+        if not CONFIG_EXAMPLE.exists():
+            print(f"\n  ✗  config.example.json not found at {CONFIG_EXAMPLE}")
+            print("     Clone the full repo and run setup.py from the project root.")
+            sys.exit(1)
+        shutil.copy(CONFIG_EXAMPLE, CONFIG_TARGET)
+        print(f"\n  ✓  Config created at {CONFIG_TARGET}")
+        print("     Open it and fill in your Discord webhook URL.")
+
+    # 3. Print next steps
+    print("\n── next steps ────────────────────────────────────────")
+    print("  1. Edit ~/.faceguard/config.json")
+    print("     → Set discord.webhook_url")
+    print("     → Set lm_studio.model to your loaded vision model name")
+    print("     → Adjust recognition.tolerance if needed (default 0.5 is good)")
+    print()
+    print("  2. Enroll your face:")
+    print("     python enroll.py add <your-name>")
+    print()
+    print("  3. Test the guard manually:")
+    print("     python face_guard.py --dry-run")
+    print()
+    print("  4. Install the LaunchAgent (Phase 6):")
+    print("     make install-agent")
+    print()
+    print("─────────────────────────────────────────────────────")
+
+
+if __name__ == "__main__":
+    main()
