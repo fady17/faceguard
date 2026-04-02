@@ -113,7 +113,7 @@ def _call_lm_studio(
 
     payload = {
         "model": model,
-        "max_tokens": 900,       # description should be concise — hard cap
+        "max_tokens": 8192,       # description should be concise — hard cap
         "temperature": 0.7,      # low temp = consistent, factual output
         "top_p": 0.8,
         "top_k": 20,

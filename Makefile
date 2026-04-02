@@ -141,31 +141,20 @@ install: _require-python _require-config _require-enrolled
 # ── Install LM Studio LaunchAgent (optional) ──────────────────────────────────
 install-lmstudio: _require-python
 	@echo "$(BOLD)Installing LM Studio autostart...$(RESET)"
-
-	@# Check lms CLI exists
-	@if [ ! -f "$(LMS_CLI)" ] && ! which lms > /dev/null 2>&1; then \
-		echo "$(RED)Error: lms CLI not found.$(RESET)"; \
-		echo "  Install LM Studio from https://lmstudio.ai"; \
-		echo "  The lms CLI is bundled with LM Studio."; \
-		exit 1; \
-	fi
-
 	@LMS_PATH=$$(which lms 2>/dev/null || echo "$(LMS_CLI)"); \
+	MODEL=$$($(PYTHON) -c 'import json; print(json.load(open("$(CONFIG_FILE)"))["lm_studio"]["model"])'); \
 	sed \
 		-e "s|__LMS__|$$LMS_PATH|g" \
 		-e "s|__HOME__|$(HOME_DIR)|g" \
+		-e "s|__PROJECT_DIR__|$(PROJECT_DIR)|g" \
+		-e "s|__MODEL__|$$MODEL|g" \
 		scripts/com.faceguard.lmstudio.plist.template \
 		> "$(LMS_PLIST)"
-
-	@if launchctl list | grep -q "$(LMS_LABEL)" 2>/dev/null; then \
-		launchctl unload "$(LMS_PLIST)" 2>/dev/null || true; \
-	fi
-
+	@launchctl unload "$(LMS_PLIST)" 2>/dev/null || true
 	@launchctl load "$(LMS_PLIST)"
 	@echo "$(GREEN)✓ LM Studio autostart installed.$(RESET)"
-	@echo "  LM Studio server will start at next login."
-	@echo "  Note: load a vision model in LM Studio before relying on this."
 
+	
 # ── Uninstall ──────────────────────────────────────────────────────────────────
 uninstall:
 	@echo "$(BOLD)Uninstalling faceguard LaunchAgent...$(RESET)"

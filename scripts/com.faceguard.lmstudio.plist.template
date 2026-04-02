@@ -37,26 +37,26 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>__LMS__</string>
-    <string>server</string>
-    <string>start</string>
+      <string>/bin/bash</string>
+      <string>-c</string>
+      <string>__LMS__ server start --port 1234 &amp; sleep 15 &amp;&amp; curl -s http://localhost:1234/api/v1/models/load -H 'Content-Type: application/json' -d '{"model":"__MODEL__","context_length":8192,"flash_attention":true}'</string>
   </array>
-
   <key>RunAtLoad</key>
   <true/>
-
-  <key>KeepAlive</key>
-  <false/>
-
   <key>ThrottleInterval</key>
   <integer>60</integer>
-
   <key>EnvironmentVariables</key>
   <dict>
-    <key>PATH</key>
-    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
-    <key>HOME</key>
-    <string>__HOME__</string>
+      <key>PATH</key>
+      <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+      <key>HOME</key>
+      <string>__HOME__</string>
+      <key>LMS</key>
+      <string>__LMS__</string>
+      <key>LM_MODEL</key>
+      <string>__MODEL__</string>
+      <key>LM_PORT</key>
+      <string>1234</string>
   </dict>
 
   <key>StandardOutPath</key>

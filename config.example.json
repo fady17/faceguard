@@ -40,7 +40,7 @@
   },
 
   "guard": {
-    "startup_delay_seconds": 8,
+    "startup_delay_seconds": 30,
     "pid_file": "~/.faceguard/faceguard.pid"
   }
 }

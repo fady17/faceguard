@@ -38,12 +38,14 @@ from faceguard.logger import get_logger
 # ── Built-in fallback sounds (all ship with every macOS) ─────────────────────
 # Ordered by dramatic impact — we try each until one exists on this machine.
 _FALLBACK_SOUNDS = [
-     "/System/Library/Sounds/Submarine.aiff",
+    "/System/Library/Sounds/Basso.aiff",
+    "/System/Library/Sounds/Hero.aiff",
+    "/System/Library/Sounds/Submarine.aiff",
     "/System/Library/Sounds/Ping.aiff",
     "/System/Library/Sounds/Sosumi.aiff",
-    "/System/Library/Sounds/Basso.aiff",
+    
     "/System/Library/Sounds/Funk.aiff",
-    "/System/Library/Sounds/Hero.aiff",
+   
 ]
 
 
