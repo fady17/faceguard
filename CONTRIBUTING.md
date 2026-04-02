@@ -21,6 +21,7 @@ cd faceguard
 uv venv .venv
 brew install cmake
 uv pip install -r requirements.txt
+uv pip install git+https://github.com/ageitgey/face_recognition_models
 uv pip install -r requirements-dev.txt
 
 # Scaffold and configure

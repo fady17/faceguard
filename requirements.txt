@@ -1,20 +1,23 @@
 # faceguard runtime dependencies
 #
 # Install:
-#   pip install -r requirements.txt
+#   uv pip install -r requirements.txt
 #
 # macOS / Apple Silicon note — face_recognition requires dlib which compiles
 # from source. Install cmake first:
 #   brew install cmake
-#   pip install face_recognition
+#   uv pip install face_recognition
 # Compilation takes 2-4 minutes. This is normal.
 #
+# face_recognition_models is a separate required package that the face_recognition
+# library does not list as a PyPI dependency — it must be installed from GitHub.
+# Without it you get: "Please install face_recognition_models..."
+#
 # Version pins: lower bound only, no upper bound.
-# We pin lower bounds because we developed and tested against these versions.
-# Upper bounds are omitted intentionally — they cause unnecessary breakage
-# when dependencies release patch versions.
 
 face_recognition>=1.3.0
+# face_recognition_models is not on PyPI — installed separately:
+# uv pip install git+https://github.com/ageitgey/face_recognition_models
 opencv-python>=4.9.0
 requests>=2.31.0
 numpy>=1.24.0

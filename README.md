@@ -41,6 +41,9 @@ brew install cmake
 # Install Python dependencies
 uv pip install -r requirements.txt
 
+# face_recognition_models is a required companion package not listed on PyPI
+uv pip install git+https://github.com/ageitgey/face_recognition_models
+
 # Scaffold config and data directory
 make setup
 ```

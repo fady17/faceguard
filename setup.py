@@ -56,22 +56,55 @@ def main() -> None:
         print(f"\n  ✓  Config created at {CONFIG_TARGET}")
         print("     Open it and fill in your Discord webhook URL.")
 
-    # 3. Print next steps
+    # 3. Check dependencies and warn about face_recognition_models
+    print("\n── dependency check ──────────────────────────────────")
+    missing = []
+    for pkg in ["face_recognition", "cv2", "requests", "numpy"]:
+        try:
+            __import__(pkg)
+            print(f"  ✓  {pkg}")
+        except ImportError:
+            print(f"  ✗  {pkg}  (not installed)")
+            missing.append(pkg)
+
+    # face_recognition_models is not importable directly but face_recognition
+    # will throw a clear error if it's missing — check for it explicitly
+    frm_ok = False
+    try:
+        import face_recognition_models
+        frm_ok = True
+        print("  ✓  face_recognition_models")
+    except ImportError:
+        print("  ✗  face_recognition_models  (not installed — see below)")
+
+    # 4. Print next steps
     print("\n── next steps ────────────────────────────────────────")
+
+    if missing or not frm_ok:
+        print("  0. Install missing dependencies:")
+        if missing:
+            install_names = {"cv2": "opencv-python"}
+            pkgs = " ".join(install_names.get(p, p) for p in missing) # type: ignore
+            print(f"     uv pip install {pkgs}")
+        if not frm_ok:
+            print("     uv pip install git+https://github.com/ageitgey/face_recognition_models")
+        print()
+
     print("  1. Edit ~/.faceguard/config.json")
     print("     → Set discord.webhook_url")
     print("     → Set lm_studio.model to your loaded vision model name")
     print("     → Adjust recognition.tolerance if needed (default 0.5 is good)")
     print()
     print("  2. Enroll your face:")
-    print("     python enroll.py add <your-name>")
+    print("     make enroll")
     print()
     print("  3. Test the guard manually:")
-    print("     python face_guard.py --dry-run")
+    print("     make test")
     print()
-    print("  4. Install the LaunchAgent (Phase 6):")
-    print("     make install-agent")
+    print("  4. Install the LaunchAgent:")
+    print("     make install")
     print()
+    print("  If something looks wrong:  make diagnose")
     print("─────────────────────────────────────────────────────")
 
 

@@ -72,6 +72,11 @@ This is a one-time system step. dlib compiles from source on install and takes 2
 ```bash
 uv pip install -r requirements.txt
 uv pip install -r requirements-dev.txt   # test tools: pytest, ruff, mypy
+
+# face_recognition_models is a required companion package that face_recognition
+# does not declare as a PyPI dependency — must be installed separately from GitHub.
+# Without this you get: "Please install face_recognition_models..."
+uv pip install git+https://github.com/ageitgey/face_recognition_models
 ```
 
 ### 6. Scaffold the data directory

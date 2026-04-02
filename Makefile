@@ -65,7 +65,7 @@ BOLD   := \033[1m
 
 # ── Phony targets ──────────────────────────────────────────────────────────────
 .PHONY: setup install install-lmstudio uninstall uninstall-all \
-        status test enroll verify logs logs-raw clean-logs check \
+        status test test-suite enroll verify logs logs-raw clean-logs check diagnose \
         _require-python _require-config _require-enrolled _check-plist-installed
 
 # ── Default target ─────────────────────────────────────────────────────────────
@@ -89,7 +89,8 @@ help:
 	@echo ""
 	@echo "$(BOLD)Optional:$(RESET)"
 	@echo "  make install-lmstudio  Auto-start LM Studio server at login"
-	@echo "  make check          Verify environment is ready"
+	@echo "  make check             Verify environment is ready"
+	@echo "  make diagnose          Debug setup issues without prereqs"
 	@echo ""
 
 # ── Setup ──────────────────────────────────────────────────────────────────────
@@ -305,6 +306,81 @@ clean-logs:
 	@find "$(FACEGUARD_DIR)/logs" -name "*.jsonl" -mtime +30 -delete -print 2>/dev/null || true
 	@echo "$(GREEN)Done.$(RESET)"
 
+# ── Diagnose (no prereqs — runs even when things are broken) ──────────────────
+diagnose:
+	@echo "$(BOLD)faceguard diagnose$(RESET)"
+	@echo ""
+
+	@# Python detection
+	@echo "  Detected Python: $(PYTHON)"
+	@if [ -f "$(PYTHON)" ]; then \
+		VERSION=$$($(PYTHON) --version 2>&1); \
+		echo "  Python version:  $$VERSION  $(GREEN)✓$(RESET)"; \
+	else \
+		echo "  Python:          $(RED)not found$(RESET)"; \
+		echo "  → Run:  uv venv .venv && uv pip install -r requirements.txt"; \
+	fi
+
+	@echo ""
+
+	@# Config file
+	@if [ ! -f "$(CONFIG_FILE)" ]; then \
+		echo "  Config:  $(RED)missing$(RESET) — run: make setup"; \
+	else \
+		echo "  Config:  $(GREEN)present$(RESET) ($(CONFIG_FILE))"; \
+		$(PYTHON) -c " \
+import json, sys; \
+try: \
+    cfg = json.load(open('$(CONFIG_FILE)')); \
+    url = cfg.get('discord',{}).get('webhook_url',''); \
+    if not url or 'YOUR_WEBHOOK' in url: \
+        print('  Webhook: \033[0;31mnot set\033[0m  — edit $(CONFIG_FILE) and replace YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN'); \
+    else: \
+        print('  Webhook: \033[0;32mset\033[0m  (' + url[:40] + '...)'); \
+except json.JSONDecodeError as e: \
+    print('  Config:  \033[0;31minvalid JSON\033[0m  —  ' + str(e)); \
+    print('  → Open $(CONFIG_FILE) and fix the JSON (check for trailing commas, missing quotes)'); \
+" 2>&1; \
+	fi
+
+	@echo ""
+
+	@# face_recognition
+	@if $(PYTHON) -c "import face_recognition" 2>/dev/null; then \
+		echo "  face_recognition: $(GREEN)installed$(RESET)"; \
+	else \
+		echo "  face_recognition: $(RED)missing$(RESET)"; \
+		echo "  → brew install cmake && uv pip install face_recognition"; \
+		echo "  → uv pip install git+https://github.com/ageitgey/face_recognition_models"; \
+	fi
+
+	@# face_recognition_models (separate package — common missing dep)
+	@if $(PYTHON) -c "import face_recognition_models" 2>/dev/null; then \
+		echo "  face_recognition_models: $(GREEN)installed$(RESET)"; \
+	else \
+		echo "  face_recognition_models: $(RED)missing$(RESET)"; \
+		echo "  → uv pip install git+https://github.com/ageitgey/face_recognition_models"; \
+	fi
+
+	@# opencv
+	@if $(PYTHON) -c "import cv2" 2>/dev/null; then \
+		VERSION=$$($(PYTHON) -c "import cv2; print(cv2.__version__)"); \
+		echo "  opencv:          $(GREEN)installed$(RESET)  ($$VERSION)"; \
+	else \
+		echo "  opencv:          $(RED)missing$(RESET)  — uv pip install opencv-python"; \
+	fi
+
+	@echo ""
+
+	@# Roster
+	@if [ -f "$(FACEGUARD_DIR)/roster.pkl" ]; then \
+		echo "  Roster:  $(GREEN)present$(RESET)"; \
+	else \
+		echo "  Roster:  $(RED)empty$(RESET)  — run: make enroll"; \
+	fi
+
+	@echo ""
+
 # ── Environment check ──────────────────────────────────────────────────────────
 check: _require-python
 	@echo "$(BOLD)Environment check$(RESET)"
@@ -413,12 +489,17 @@ _require-config:
 	fi
 	@$(PYTHON) -c " \
 import json, sys; \
-cfg = json.load(open('$(CONFIG_FILE)')); \
-url = cfg.get('discord',{}).get('webhook_url',''); \
-if not url or 'YOUR_WEBHOOK' in url: \
-    print('$(RED)Error: discord.webhook_url is not set in $(CONFIG_FILE).$(RESET)'); \
-    sys.exit(1) \
-" 2>/dev/null || exit 1
+try: \
+    cfg = json.load(open('$(CONFIG_FILE)')); \
+    url = cfg.get('discord',{}).get('webhook_url',''); \
+    if not url or 'YOUR_WEBHOOK' in url: \
+        print('Error: discord.webhook_url is not set in $(CONFIG_FILE).'); \
+        print('  Edit the file and replace YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN'); \
+        sys.exit(1); \
+except json.JSONDecodeError as e: \
+    print('Error: $(CONFIG_FILE) is not valid JSON: ' + str(e)); \
+    sys.exit(1); \
+" || exit 1
 
 _require-enrolled:
 	@if [ ! -f "$(FACEGUARD_DIR)/roster.pkl" ]; then \
