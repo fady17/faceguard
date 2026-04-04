@@ -72,7 +72,7 @@ class TestDescribeIntruderGuards:
         return LMStudioConfig(
             enabled=True,
             base_url="http://localhost:1234/v1",
-            model="moondream2",
+            model="gemma-4-e2b-it",
             timeout_seconds=2,
             describe_unknown=True,
         )
@@ -112,7 +112,7 @@ class TestDescribeIntruderNetworkFailures:
         return LMStudioConfig(
             enabled=True,
             base_url="http://localhost:1234/v1",
-            model="moondream2",
+            model="gemma-4-e2b-it",
             timeout_seconds=2,
             describe_unknown=True,
         )

@@ -103,12 +103,12 @@ make logs
 When the guard detects an unknown face, it can describe the intruder's appearance in the Discord alert ("Male, 30s, dark hair, grey hoodie") using a local vision model.
 
 1. Download [LM Studio](https://lmstudio.ai)
-2. In LM Studio: download a vision model (`moondream2` is fastest, `llava-1.5-7b` is more detailed)
+2. In LM Studio: download a vision model (`gemma-4-e2b-it` is fastest, `llava-1.5-7b` is more detailed)
 3. Load the model and start the local server (Developer tab → Start Server)
 4. Set the model name in `~/.faceguard/config.json`:
    ```json
    "lm_studio": {
-     "model": "qwen/qwen3.5-9b"
+     "model": "gemma-4-e2b-it"
    }
    ```
 5. Auto-start LM Studio at login:
@@ -144,7 +144,7 @@ All settings live in `~/.faceguard/config.json`. The file is created from `confi
 | `recognition.tolerance` | `0.5` | Match threshold. Lower = stricter. Range: `0.4`–`0.6` |
 | `recognition.camera_index` | `0` | Camera index. `0` = built-in FaceTime camera |
 | `lm_studio.enabled` | `true` | Enable vision description layer |
-| `lm_studio.model` | `moondream2` | Loaded model name, exactly as shown in LM Studio |
+| `lm_studio.model` | `gemma-4-e2b-it` | Loaded model name, exactly as shown in LM Studio |
 | `lm_studio.timeout_seconds` | `10` | Max wait for LM response before sending alert without it |
 | `siren.enabled` | `true` | Play local siren on unknown face |
 | `siren.sound_file` | `null` | `null` = built-in macOS sound. Absolute path for custom siren |

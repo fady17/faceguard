@@ -22,7 +22,7 @@ class TestConfigLoading:
         cfg = load_config(cfg_file)
         assert cfg.discord.webhook_url == "https://discord.com/api/webhooks/test/token"
         assert cfg.recognition.tolerance == 0.5
-        assert cfg.lm_studio.model == "moondream2"
+        assert cfg.lm_studio.model == "gemma-4-e2b-it"
 
     def test_missing_config_file_raises(self, tmp_path: Path):
         with pytest.raises(ConfigError, match="not found"):

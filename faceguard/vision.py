@@ -28,7 +28,7 @@ LM Studio API:
   dependency and to have precise control over timeout behavior.
 
 Model notes:
-  - moondream2: fast, small (1.8B), good for simple descriptions
+  - gemma-4-e2b-it: fast, small (1.8B), good for simple descriptions
   - llava-1.5-7b: more detailed, slower
   - llava-1.5-13b: most detailed, requires more VRAM
   Any vision-capable model loaded in LM Studio works — set the name in config.

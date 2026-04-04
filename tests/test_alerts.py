@@ -235,7 +235,7 @@ class TestDispatch:
         cfg.discord.webhook_url = "https://discord.com/api/webhooks/test/token"
         cfg.lm_studio.enabled = False
         cfg.lm_studio.describe_unknown = False
-        cfg.lm_studio.model = "moondream2"
+        cfg.lm_studio.model = "gemma-4-e2b-it"
         return cfg
 
     def test_known_is_fully_silent(self, result_known: GuardResult):

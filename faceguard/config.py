@@ -36,7 +36,7 @@ class DiscordConfig:
 class LMStudioConfig:
     enabled: bool = True
     base_url: str = "http://localhost:1234/v1"
-    model: str = "moondream2"
+    model: str = "gemma-4-e2b-it"
     timeout_seconds: int = 10
     describe_unknown: bool = True
 
@@ -124,7 +124,7 @@ def load_config(path: Path = CONFIG_PATH) -> AppConfig:
         lm_studio = LMStudioConfig(
             enabled=lm_raw.get("enabled", True),
             base_url=lm_raw.get("base_url", "http://localhost:1234/v1"),
-            model=lm_raw.get("model", "moondream2"),
+            model=lm_raw.get("model", "gemma-4-e2b-it"),
             timeout_seconds=lm_raw.get("timeout_seconds", 10),
             describe_unknown=lm_raw.get("describe_unknown", True),
         )

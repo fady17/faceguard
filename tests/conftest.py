@@ -82,7 +82,7 @@ def cfg(tmp_path: Path) -> AppConfig:
         lm_studio=LMStudioConfig(
             enabled=True,
             base_url="http://localhost:19999/v1",  # nothing listens here
-            model="moondream2",
+            model="gemma-4-e2b-it",
             timeout_seconds=2,
             describe_unknown=True,
         ),
@@ -144,7 +144,7 @@ def cfg_file(tmp_path: Path) -> Path:
         "lm_studio": {
             "enabled": True,
             "base_url": "http://localhost:1234/v1",
-            "model": "qwen/qwen3.5-9b",
+            "model": "gemma-4-e2b-it",
             "timeout_seconds": 60,
             "describe_unknown": True,
         },

@@ -11,7 +11,7 @@ A macOS login-time face recognition guard. It fires after the login password is 
 **Stack at a glance:**
 - Face recognition: `face_recognition` (dlib, 128-dimensional face embeddings)
 - Camera: `opencv-python`
-- Vision description: LM Studio local vision model (moondream2, llava, etc.) via OpenAI-compatible API
+- Vision description: LM Studio local vision model (gemma-4-e2b-it, llava, etc.) via OpenAI-compatible API
 - Alert delivery: Discord webhook
 - Audio: macOS `afplay` subprocess
 - Autostart: macOS `LaunchAgent` plist (Phase 6)
@@ -343,7 +343,7 @@ All fields with their defaults and valid ranges:
   "lm_studio": {
     "enabled": true,              // false = skip vision layer entirely
     "base_url": "http://localhost:1234/v1",   // LM Studio server URL
-    "model": "qwen/qwen3.5-9b",        // model name exactly as shown in LM Studio
+    "model": "gemma-4-e2b-it",        // model name exactly as shown in LM Studio
     "timeout_seconds": 60,        // max seconds to wait for LM response
     "describe_unknown": true      // false = skip vision even when enabled
   },
@@ -393,7 +393,7 @@ All fields with their defaults and valid ranges:
 
 1. Download and install [LM Studio](https://lmstudio.ai)
 2. In the Discover tab, search for and download a vision model. Recommended options:
-   - `moondream2` — fastest, 1.8B params, good for basic descriptions
+   - `gemma-4-e2b-it` — fastest, 1.8B params, good for basic descriptions
    - `llava-1.5-7b-hgguf` — more detailed descriptions, needs ~6GB VRAM
 3. Load the model in the Chat tab
 4. Start the local server: Developer tab → Start Server (default port 1234)

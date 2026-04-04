@@ -3,7 +3,7 @@
 # Called by com.faceguard.lmstudio.plist at login.
 
 LMS="${LMS:-/usr/local/bin/lms}"
-MODEL="${LM_MODEL:-qwen/qwen3.5-9b}"
+MODEL="${LM_MODEL:-gemma-4-e2b-it}"
 PORT="${LM_PORT:-1234}"
 
 echo "[lmstudio-start] Starting server on port $PORT..."
