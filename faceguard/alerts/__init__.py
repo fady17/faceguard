@@ -110,7 +110,16 @@ def dispatch(result: GuardResult, cfg: AppConfig, dry_run: bool = False) -> None
 
     # ── 3. Send Discord alert (foreground, with retries) ──────────────────────
     if send_discord:
-        success = send_alert(result=result, webhook_url=cfg.discord.webhook_url)
+        try:
+            success = send_alert(result=result, webhook_url=cfg.discord.webhook_url)
+        except Exception as e:
+            log.error(
+                "discord_alert_failed",
+                verdict=verdict.value,
+                error_detail=f"Exception during Discord alert: {type(e).__name__}: {str(e)}",
+            )
+            success = False # Force failure state if an exception occurs
+
         if not success:
             log.error(
                 "discord_alert_failed",
