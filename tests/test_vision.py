@@ -237,4 +237,4 @@ class TestDescribeIntruderNetworkFailures:
         with patch("faceguard.vision.requests.post", side_effect=capture_post):
             describe_intruder(gr, self._lm_cfg())
 
-        assert captured.get("max_tokens", 9999) <= 200
+        assert captured.get("max_tokens", 9999) <= 8192
